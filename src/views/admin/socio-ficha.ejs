@@ -1,0 +1,62 @@
+<%- include('../partials/admin-top') %>
+
+<section class="ficha">
+  <div class="ficha__cabeza">
+    <span class="avatar" aria-hidden="true"><%= socio.nombre[0] %><%= socio.apellido[0] %></span>
+    <div>
+      <h2><%= socio.nombre %> <%= socio.apellido %></h2>
+      <p>DNI <%= socio.dni %> · <%= socio.Plan ? 'Plan ' + socio.Plan.nombre : 'Sin plan' %> · socio desde <%= fechas.fechaCorta(socio.fecha_alta) %></p>
+      <p><%= socio.telefono || 'Sin teléfono' %> · <%= socio.email || 'Sin email' %></p>
+    </div>
+    <span class="etiqueta-estado etiqueta-estado--<%= socio.estado %>"><%= socio.estado %></span>
+  </div>
+  <div class="ficha__acciones">
+    <form method="post" action="/admin/asistencia">
+      <input type="hidden" name="socio_id" value="<%= socio.id %>">
+      <input type="hidden" name="volver" value="/admin/socios/<%= socio.id %>">
+      <button class="pildora pildora--verde pildora--chica" type="submit">Registrar ingreso hoy</button>
+    </form>
+    <a class="pildora pildora--linea pildora--chica" href="/admin/socios/<%= socio.id %>/editar">Editar</a>
+    <form method="post" action="/admin/socios/<%= socio.id %>?_method=DELETE" data-confirmar="¿Eliminar a <%= socio.nombre %> <%= socio.apellido %>? Se borran también sus cuotas y asistencias.">
+      <button class="pildora pildora--peligro pildora--chica" type="submit">Eliminar</button>
+    </form>
+  </div>
+  <% if (socio.notas) { %><p class="ficha__notas"><strong>Notas:</strong> <%= socio.notas %></p><% } %>
+</section>
+
+<div class="rejilla-2">
+  <section class="tarjeta">
+    <header class="tarjeta__cabeza"><h2>Cuotas</h2></header>
+    <% if (!cuotas.length) { %><p class="vacio-admin">Sin cuotas generadas.</p><% } else { %>
+    <ul class="lista">
+      <% cuotas.forEach((c) => { %>
+        <li>
+          <div><strong><%= fechas.nombrePeriodo(c.periodo) %></strong><small>Vence <%= fechas.fechaCorta(c.vence) %> · <%= formatoPrecio(c.monto) %></small></div>
+          <% if (c.estado === 'pagada') { %>
+            <span class="etiqueta-estado etiqueta-estado--pagada">Pagada</span>
+          <% } else { %>
+            <form method="post" action="/admin/cuotas/<%= c.id %>/cobrar" class="mini-form">
+              <input type="hidden" name="volver" value="/admin/socios/<%= socio.id %>">
+              <select name="metodo" aria-label="Método de pago"><option value="efectivo">Efectivo</option><option value="transferencia">Transferencia</option><option value="tarjeta">Tarjeta</option></select>
+              <button class="pildora pildora--naranja pildora--chica" type="submit">Cobrar</button>
+            </form>
+          <% } %>
+        </li>
+      <% }) %>
+    </ul>
+    <% } %>
+  </section>
+
+  <section class="tarjeta">
+    <header class="tarjeta__cabeza"><h2>Últimas asistencias</h2><span class="ayuda"><%= asistencias.length %> registros</span></header>
+    <% if (!asistencias.length) { %><p class="vacio-admin">Todavía no registró ingresos.</p><% } else { %>
+    <ul class="lista lista--compacta">
+      <% asistencias.forEach((a) => { %>
+        <li><span><%= fechas.fechaLarga(a.fecha) %></span><span><%= hhmm(a.hora) %> hs</span></li>
+      <% }) %>
+    </ul>
+    <% } %>
+  </section>
+</div>
+
+<%- include('../partials/admin-bottom') %>

@@ -1,0 +1,11 @@
+<%- include('partials/head', { estilos: ['landing'] }) %>
+<body class="landing">
+<%- include('partials/header') %>
+<main class="error-pagina">
+  <p class="etiqueta">Error <%= codigo %></p>
+  <h1><%= mensaje %></h1>
+  <a class="pildora pildora--verde pildora--grande" href="/">Volver al inicio</a>
+</main>
+<script src="/js/landing.js"></script>
+</body>
+</html>

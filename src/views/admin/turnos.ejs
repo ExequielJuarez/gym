@@ -1,0 +1,53 @@
+<%- include('../partials/admin-top') %>
+
+<div class="herramientas">
+  <form class="filtros" method="get" action="/admin/turnos">
+    <input type="date" name="fecha" value="<%= fecha %>" aria-label="Fecha" data-autoenviar>
+    <select name="estado" aria-label="Estado" data-autoenviar>
+      <option value="">Todos los estados</option>
+      <option value="reservado" <%= estado === 'reservado' ? 'selected' : '' %>>Reservados</option>
+      <option value="asistio" <%= estado === 'asistio' ? 'selected' : '' %>>Asistieron</option>
+      <option value="cancelado" <%= estado === 'cancelado' ? 'selected' : '' %>>Cancelados</option>
+    </select>
+    <a class="pildora pildora--linea pildora--chica" href="/admin/turnos?fecha=<%= hoy %>">Hoy</a>
+    <a class="pildora pildora--linea pildora--chica" href="/admin/turnos">Ver todos</a>
+  </form>
+</div>
+
+<section class="tarjeta tarjeta--tabla">
+  <% if (!turnos.length) { %><p class="vacio-admin">No hay turnos para este filtro.</p><% } else { %>
+  <div class="tabla-scroll">
+    <table class="tabla">
+      <thead><tr><th scope="col">Fecha</th><th scope="col">Clase</th><th scope="col">Persona</th><th scope="col">Contacto</th><th scope="col">Código</th><th scope="col">Estado</th><th scope="col">Pago</th><th scope="col"><span class="solo-lectores">Acciones</span></th></tr></thead>
+      <tbody>
+        <% turnos.forEach((t) => { %>
+          <tr>
+            <td data-etiqueta="Fecha"><strong><%= fechas.fechaCorta(t.fecha) %></strong> <%= hhmm(t.Horario.hora_inicio) %></td>
+            <td data-etiqueta="Clase"><%= t.Horario.actividad %></td>
+            <td data-etiqueta="Persona"><%= t.nombre %><% if (t.socio_id) { %> <a class="insignia" href="/admin/socios/<%= t.socio_id %>">socio</a><% } %></td>
+            <td data-etiqueta="Contacto"><%= t.telefono %><br><small><%= t.email || '' %></small></td>
+            <td data-etiqueta="Código"><code><%= t.codigo %></code></td>
+            <td data-etiqueta="Estado"><span class="etiqueta-estado etiqueta-estado--<%= t.estado %>"><%= t.estado === 'asistio' ? 'Asistió' : t.estado %></span></td>
+            <td data-etiqueta="Pago">
+              <form method="post" action="/admin/turnos/<%= t.id %>/pago" class="mini-form">
+                <input type="hidden" name="volver" value="/admin/turnos?fecha=<%= fecha %>&estado=<%= estado %>">
+                <button type="submit" class="pago-boton <%= t.pagado ? 'es-pagado' : '' %>" aria-pressed="<%= !!t.pagado %>" title="Cambiar estado de pago"><%= t.pagado ? 'Pagó' : 'No pagó' %></button>
+              </form>
+            </td>
+            <td class="tabla__acciones">
+              <form method="post" action="/admin/turnos/<%= t.id %>/estado" class="mini-form">
+                <input type="hidden" name="volver" value="/admin/turnos?fecha=<%= fecha %>&estado=<%= estado %>">
+                <% if (t.estado !== 'asistio') { %><button class="pildora pildora--verde pildora--chica" name="estado" value="asistio" type="submit">Asistió</button><% } %>
+                <% if (t.estado !== 'cancelado') { %><button class="pildora pildora--linea pildora--chica" name="estado" value="cancelado" type="submit">Cancelar</button><% } %>
+                <% if (t.estado !== 'reservado') { %><button class="pildora pildora--linea pildora--chica" name="estado" value="reservado" type="submit">Reabrir</button><% } %>
+              </form>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+  <% } %>
+</section>
+
+<%- include('../partials/admin-bottom') %>

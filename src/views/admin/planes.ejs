@@ -1,0 +1,45 @@
+<%- include('../partials/admin-top') %>
+<% const e = editar; %>
+
+<div class="rejilla-form">
+  <section class="tarjeta tarjeta--form">
+    <header class="tarjeta__cabeza"><h2><%= e ? 'Editar plan' : 'Nuevo plan' %></h2><% if (e) { %><a href="/admin/planes">Cancelar</a><% } %></header>
+    <form method="post" action="<%= e ? `/admin/planes/${e.id}?_method=PUT` : '/admin/planes' %>" novalidate>
+      <label class="campo"><span>Nombre</span><input name="nombre" value="<%= e ? e.nombre : '' %>" required></label>
+      <label class="campo"><span>Descripción corta</span><input name="descripcion" value="<%= e && e.descripcion ? e.descripcion : '' %>" maxlength="200"></label>
+      <div class="campos-2">
+        <label class="campo"><span>Precio mensual ($)</span><input type="number" name="precio" min="0" step="100" value="<%= e ? e.precio : '' %>" required></label>
+        <label class="campo"><span>Días por semana</span><input type="number" name="clases_por_semana" min="1" max="14" value="<%= e && e.clases_por_semana ? e.clases_por_semana : '' %>" placeholder="Vacío = todos los días"></label>
+      </div>
+      <label class="campo"><span>Beneficios (uno por línea)</span><textarea name="beneficios" rows="5"><%= e && e.beneficios ? e.beneficios : '' %></textarea></label>
+      <div class="campos-2">
+        <label class="campo"><span>Destacado</span>
+          <select name="destacado"><option value="0">No</option><option value="1" <%= e && e.destacado ? 'selected' : '' %>>Sí, "el más elegido"</option></select>
+        </label>
+      </div>
+      <button class="pildora pildora--verde" type="submit"><%= e ? 'Guardar cambios' : 'Crear plan' %></button>
+    </form>
+  </section>
+
+  <section class="tarjeta">
+    <header class="tarjeta__cabeza"><h2>Planes</h2></header>
+    <p class="ayuda ayuda--arrastrar">Arrastrá los planes para cambiar el orden en que se muestran en la web.</p>
+    <ul class="lista lista--ordenable" data-ordenable="/admin/planes/orden">
+      <% planes.forEach((p) => { %>
+        <li class="<%= p.activo ? '' : 'es-apagada' %>" draggable="true" data-id="<%= p.id %>">
+          <span class="asa" aria-hidden="true" title="Arrastrar">⋮⋮</span>
+          <div>
+            <strong><%= p.nombre %> · <%= precioMes(p.precio) %> <%= p.destacado ? '★' : '' %></strong>
+            <small><%= p.clases_por_semana ? p.clases_por_semana + (p.clases_por_semana === 1 ? ' día' : ' días') + ' por semana' : 'Pase libre' %><%= p.activo ? '' : ' · oculto en la web' %></small>
+          </div>
+          <div class="mini-acciones">
+            <a class="pildora pildora--linea pildora--chica" href="/admin/planes?editar=<%= p.id %>">Editar</a>
+            <form method="post" action="/admin/planes/<%= p.id %>/alternar"><button class="pildora pildora--linea pildora--chica" type="submit"><%= p.activo ? 'Ocultar' : 'Mostrar' %></button></form>
+          </div>
+        </li>
+      <% }) %>
+    </ul>
+  </section>
+</div>
+
+<%- include('../partials/admin-bottom') %>

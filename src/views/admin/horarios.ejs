@@ -1,0 +1,53 @@
+<%- include('../partials/admin-top') %>
+<% const e = editar; %>
+
+<div class="rejilla-form">
+  <section class="tarjeta tarjeta--form">
+    <header class="tarjeta__cabeza"><h2><%= e ? 'Editar clase' : 'Nueva clase' %></h2><% if (e) { %><a href="/admin/horarios">Cancelar</a><% } %></header>
+    <form method="post" action="<%= e ? `/admin/horarios/${e.id}?_method=PUT` : '/admin/horarios' %>" novalidate>
+      <label class="campo"><span>Actividad</span><input name="actividad" value="<%= e ? e.actividad : '' %>" list="lista-actividades" required placeholder="Ej: Funcional"></label>
+      <label class="campo">
+        <span>Día</span>
+        <select name="dia">
+          <% for (let d = 1; d <= 7; d++) { %><option value="<%= d %>" <%= e && e.dia === d ? 'selected' : '' %>><%= dias[d] %></option><% } %>
+        </select>
+      </label>
+      <div class="campos-2">
+        <label class="campo"><span>Desde</span><input type="time" name="hora_inicio" value="<%= e ? hhmm(e.hora_inicio) : '' %>" required></label>
+        <label class="campo"><span>Hasta</span><input type="time" name="hora_fin" value="<%= e ? hhmm(e.hora_fin) : '' %>" required></label>
+      </div>
+      <div class="campos-2">
+        <label class="campo"><span>Profesor/a</span><input name="profesor" value="<%= e && e.profesor ? e.profesor : '' %>"></label>
+        <label class="campo"><span>Cupo</span><input type="number" min="1" max="200" name="cupo" value="<%= e ? e.cupo : 20 %>" required></label>
+      </div>
+      <datalist id="lista-actividades"><% [...new Set(horarios.map((h) => h.actividad))].forEach((a) => { %><option value="<%= a %>"><% }) %></datalist>
+      <button class="pildora pildora--verde" type="submit"><%= e ? 'Guardar cambios' : 'Agregar a la grilla' %></button>
+    </form>
+  </section>
+
+  <section class="grilla-admin">
+    <% for (let d = 1; d <= 7; d++) { const delDia = horarios.filter((h) => h.dia === d); %>
+      <article class="tarjeta tarjeta--dia">
+        <header class="tarjeta__cabeza"><h2><%= dias[d] %></h2><span class="ayuda"><%= delDia.length %> clases</span></header>
+        <% if (!delDia.length) { %><p class="vacio-admin">Sin clases.</p><% } %>
+        <ul class="lista">
+          <% delDia.forEach((h) => { %>
+            <li class="<%= h.activo ? '' : 'es-apagada' %>">
+              <div>
+                <strong><%= hhmm(h.hora_inicio) %> – <%= hhmm(h.hora_fin) %> · <%= h.actividad %></strong>
+                <small><%= h.profesor || 'Sin profesor' %> · cupo <%= h.cupo %><%= h.activo ? '' : ' · oculta en la web' %></small>
+              </div>
+              <div class="mini-acciones">
+                <a class="pildora pildora--linea pildora--chica" href="/admin/horarios?editar=<%= h.id %>">Editar</a>
+                <form method="post" action="/admin/horarios/<%= h.id %>/alternar"><button class="pildora pildora--linea pildora--chica" type="submit"><%= h.activo ? 'Ocultar' : 'Mostrar' %></button></form>
+                <form method="post" action="/admin/horarios/<%= h.id %>?_method=DELETE" data-confirmar="¿Eliminar esta clase? También se borran sus turnos reservados."><button class="pildora pildora--peligro pildora--chica" type="submit">✕</button></form>
+              </div>
+            </li>
+          <% }) %>
+        </ul>
+      </article>
+    <% } %>
+  </section>
+</div>
+
+<%- include('../partials/admin-bottom') %>

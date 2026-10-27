@@ -1,0 +1,23 @@
+<header class="barra" id="barra">
+  <div class="barra__interior">
+    <button class="pildora pildora--oscura barra__menu" type="button" aria-expanded="false" aria-controls="navegacion" data-menu>
+      Menú <span class="barra__hamburguesa" aria-hidden="true"><i></i><i></i></span>
+    </button>
+
+    <a class="barra__marca" href="/" aria-label="<%= gym.nombre %> - Inicio">
+      <%- include('logo') %>
+      <span><%= gym.nombre %></span>
+    </a>
+
+    <nav class="barra__nav" id="navegacion" aria-label="Principal">
+      <a href="/#horarios">Horarios</a>
+      <a href="/#planes">Planes</a>
+      <a href="/#turnos">Turnos</a>
+      <a href="/#inscripcion">Inscribite</a>
+      <a href="/#contacto">Contacto</a>
+    </nav>
+
+    <a class="pildora pildora--blanca barra__cta" href="/#turnos">Sacar turno</a>
+  </div>
+</header>
+

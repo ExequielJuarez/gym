@@ -1,0 +1,65 @@
+<%- include('../partials/admin-top') %>
+
+<section class="kpis" aria-label="Indicadores">
+  <article class="kpi"><p>Socios activos</p><strong><%= datos.activos %></strong><a href="/admin/socios">Ver socios →</a></article>
+  <article class="kpi"><p>Ingresos hoy</p><strong><%= datos.asistenciasHoy %></strong><a href="/admin/asistencia">Registrar →</a></article>
+  <article class="kpi"><p>Turnos hoy</p><strong><%= datos.turnosHoy %></strong><a href="/admin/turnos?fecha=<%= fechas.hoy() %>">Ver turnos →</a></article>
+  <article class="kpi kpi--alerta"><p>Cuotas vencidas</p><strong><%= datos.vencidas %></strong><a href="/admin/cuotas?estado=vencida&periodo=">Revisar →</a></article>
+</section>
+
+<div class="rejilla-2">
+  <section class="tarjeta">
+    <header class="tarjeta__cabeza"><h2>Cobranza de <%= fechas.nombrePeriodo(datos.periodo) %></h2><a href="/admin/cuotas">Ver cuotas</a></header>
+    <% const total = datos.cobranza.cobrado + datos.cobranza.pendiente; const pct = total ? Math.round(datos.cobranza.cobrado * 100 / total) : 0; %>
+    <div class="cobranza">
+      <div class="cobranza__cifras">
+        <div><span>Cobrado</span><strong class="texto-verde"><%= formatoCompacto(datos.cobranza.cobrado) %></strong><small><%= datos.cobranza.cantPagadas %> cuotas</small></div>
+        <div><span>Pendiente</span><strong class="texto-naranja"><%= formatoCompacto(datos.cobranza.pendiente) %></strong><small><%= datos.cobranza.cantPendientes %> cuotas</small></div>
+      </div>
+      <div class="barra-progreso" role="progressbar" aria-valuenow="<%= pct %>" aria-valuemin="0" aria-valuemax="100" aria-label="Porcentaje cobrado"><i style="width: <%= pct %>%"></i></div>
+      <p class="ayuda"><%= pct %>% del mes ya cobrado</p>
+    </div>
+  </section>
+
+  <section class="tarjeta">
+    <header class="tarjeta__cabeza"><h2>Asistencia, últimos 7 días</h2></header>
+    <% const max = Math.max(1, ...datos.ultimos7.map((d) => d.cantidad)); %>
+    <div class="barras" role="img" aria-label="Asistencia diaria de los últimos 7 días">
+      <% datos.ultimos7.forEach((d) => { %>
+        <div class="barras__col">
+          <span class="barras__valor"><%= d.cantidad %></span>
+          <i style="height: <%= Math.max(6, Math.round(d.cantidad * 100 / max)) %>%"></i>
+          <small><%= fechas.DIAS[fechas.diaSemana(d.fecha)].slice(0, 3) %></small>
+        </div>
+      <% }) %>
+    </div>
+  </section>
+</div>
+
+<div class="rejilla-2">
+  <section class="tarjeta">
+    <header class="tarjeta__cabeza"><h2>Próximos turnos</h2><a href="/admin/turnos">Ver todos</a></header>
+    <% if (!datos.proximos.length) { %>
+      <p class="vacio-admin">Todavía no hay turnos reservados.</p>
+    <% } else { %>
+      <ul class="lista">
+        <% datos.proximos.forEach((t) => { %>
+          <li><div><strong><%= t.nombre %></strong><small><%= t.Horario.actividad %></small></div><span><%= fechas.fechaCorta(t.fecha) %> · <%= hhmm(t.Horario.hora_inicio) %></span></li>
+        <% }) %>
+      </ul>
+    <% } %>
+  </section>
+
+  <section class="tarjeta">
+    <header class="tarjeta__cabeza"><h2>Inscripciones nuevas</h2><a href="/admin/inscripciones">Ver todas</a></header>
+    <p class="gran-numero"><%= datos.inscripciones %></p>
+    <p class="ayuda">solicitudes online esperando tu contacto</p>
+    <div class="acciones-rapidas">
+      <a class="pildora pildora--oscura pildora--chica" href="/admin/socios/nuevo">+ Nuevo socio</a>
+      <a class="pildora pildora--linea pildora--chica" href="/admin/asistencia">Registrar ingreso</a>
+      <a class="pildora pildora--linea pildora--chica" href="/admin/horarios">Editar horarios</a>
+    </div>
+  </section>
+</div>
+
+<%- include('../partials/admin-bottom') %>

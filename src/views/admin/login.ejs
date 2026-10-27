@@ -1,0 +1,37 @@
+<%- include('../partials/head', { estilos: ['admin'] }) %>
+<body class="admin admin--login">
+<main class="acceso">
+  <div class="acceso__videos" aria-hidden="true">
+    <video class="acceso__video es-activo" src="/videos/entrenamiento-2.mp4" autoplay muted playsinline preload="auto" data-video></video>
+    <video class="acceso__video" src="/videos/entrenamiento-1.mp4" muted playsinline preload="auto" data-video></video>
+    <div class="acceso__velo"></div>
+    <div class="acceso__puntos"></div>
+  </div>
+
+  <section class="acceso__marca" aria-label="<%= gym.nombre %>">
+    <span class="acceso__logo"><%- include('../partials/logo') %> <%= gym.nombre %></span>
+    <h1>Panel de <em>gestión</em></h1>
+    <p>Socios, cuotas, asistencia y horarios en un solo lugar.</p>
+    <ul class="acceso__puntos-lista">
+      <li>Control de socios</li>
+      <li>Cuotas y cobranza</li>
+      <li>Asistencia en tiempo real</li>
+    </ul>
+  </section>
+
+  <section class="acceso__tarjeta" aria-labelledby="login-titulo">
+    <h2 id="login-titulo">Ingresar</h2>
+    <p>Acceso exclusivo del personal</p>
+    <%- include('../partials/flash') %>
+    <form action="/admin/login" method="post" novalidate>
+      <label class="campo"><span>Email</span><input type="email" name="email" autocomplete="username" required autofocus></label>
+      <label class="campo"><span>Contraseña</span><input type="password" name="clave" autocomplete="current-password" required></label>
+      <button class="acceso__boton" type="submit">Ingresar</button>
+    </form>
+    <a class="acceso__volver" href="/">← Volver a la web</a>
+  </section>
+</main>
+<script src="/js/admin.js"></script>
+<script src="/js/landing.js"></script>
+</body>
+</html>

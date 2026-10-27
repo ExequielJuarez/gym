@@ -1,0 +1,42 @@
+<%- include('../partials/admin-top') %>
+<% const v = (campo) => (socio && socio[campo] != null ? socio[campo] : ''); %>
+
+<section class="tarjeta tarjeta--form">
+  <form method="post" action="<%= socio ? `/admin/socios/${socio.id}?_method=PUT` : '/admin/socios' %>" novalidate>
+    <div class="campos-2">
+      <label class="campo"><span>Nombre</span><input name="nombre" value="<%= v('nombre') %>" required></label>
+      <label class="campo"><span>Apellido</span><input name="apellido" value="<%= v('apellido') %>" required></label>
+    </div>
+    <div class="campos-2">
+      <label class="campo"><span>DNI</span><input name="dni" inputmode="numeric" value="<%= v('dni') %>" required></label>
+      <label class="campo"><span>Fecha de nacimiento</span><input type="date" name="fecha_nacimiento" value="<%= v('fecha_nacimiento') %>"></label>
+    </div>
+    <div class="campos-2">
+      <label class="campo"><span>Teléfono</span><input type="tel" name="telefono" value="<%= v('telefono') %>"></label>
+      <label class="campo"><span>Email</span><input type="email" name="email" value="<%= v('email') %>"></label>
+    </div>
+    <div class="campos-2">
+      <label class="campo">
+        <span>Plan</span>
+        <select name="plan_id">
+          <option value="">Sin plan</option>
+          <% planes.forEach((p) => { %><option value="<%= p.id %>" <%= socio && socio.plan_id === p.id ? 'selected' : '' %>><%= p.nombre %> · <%= formatoPrecio(p.precio) %></option><% }) %>
+        </select>
+      </label>
+      <label class="campo">
+        <span>Estado</span>
+        <select name="estado">
+          <option value="activo" <%= v('estado') !== 'inactivo' ? 'selected' : '' %>>Activo</option>
+          <option value="inactivo" <%= v('estado') === 'inactivo' ? 'selected' : '' %>>Inactivo</option>
+        </select>
+      </label>
+    </div>
+    <label class="campo"><span>Notas internas</span><textarea name="notas" rows="3" maxlength="300"><%= v('notas') %></textarea></label>
+    <div class="form-acciones">
+      <a class="pildora pildora--linea" href="<%= socio ? `/admin/socios/${socio.id}` : '/admin/socios' %>">Cancelar</a>
+      <button class="pildora pildora--verde" type="submit"><%= socio ? 'Guardar cambios' : 'Crear socio' %></button>
+    </div>
+  </form>
+</section>
+
+<%- include('../partials/admin-bottom') %>

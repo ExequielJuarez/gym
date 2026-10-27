@@ -1,0 +1,44 @@
+<%- include('../partials/admin-top') %>
+
+<section class="checkin">
+  <div>
+    <h2>Registrar <em>ingreso</em></h2>
+    <p>Escribí el DNI del socio y listo. Te avisamos si debe cuotas.</p>
+  </div>
+  <form method="post" action="/admin/asistencia" class="checkin__form">
+    <input type="text" name="dni" inputmode="numeric" placeholder="DNI del socio" autocomplete="off" aria-label="DNI del socio" <%= esHoy ? 'autofocus' : '' %> required>
+    <button class="pildora pildora--verde" type="submit">Registrar</button>
+  </form>
+</section>
+
+<div class="herramientas">
+  <form class="filtros" method="get" action="/admin/asistencia">
+    <input type="date" name="fecha" value="<%= fecha %>" aria-label="Fecha" data-autoenviar>
+    <% if (!esHoy) { %><a class="pildora pildora--linea pildora--chica" href="/admin/asistencia">Volver a hoy</a><% } %>
+  </form>
+  <p class="ayuda"><strong><%= asistencias.length %></strong> ingresos el <%= fechas.fechaLarga(fecha) %></p>
+</div>
+
+<section class="tarjeta tarjeta--tabla">
+  <% if (!asistencias.length) { %><p class="vacio-admin">Sin ingresos registrados ese día.</p><% } else { %>
+  <div class="tabla-scroll">
+    <table class="tabla">
+      <thead><tr><th scope="col">Hora</th><th scope="col">Socio</th><th scope="col">Plan</th><th scope="col"><span class="solo-lectores">Acciones</span></th></tr></thead>
+      <tbody>
+        <% asistencias.forEach((a) => { %>
+          <tr>
+            <td data-etiqueta="Hora"><strong><%= hhmm(a.hora) %></strong></td>
+            <td data-etiqueta="Socio"><a class="enlace-fuerte" href="/admin/socios/<%= a.socio_id %>"><%= a.Socio.apellido %>, <%= a.Socio.nombre %></a></td>
+            <td data-etiqueta="Plan"><%= a.Socio.Plan ? a.Socio.Plan.nombre : '—' %></td>
+            <td class="tabla__acciones">
+              <form method="post" action="/admin/asistencia/<%= a.id %>?_method=DELETE" data-confirmar="¿Quitar este ingreso?"><button class="pildora pildora--linea pildora--chica" type="submit">Quitar</button></form>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+  <% } %>
+</section>
+
+<%- include('../partials/admin-bottom') %>

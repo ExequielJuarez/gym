@@ -1,0 +1,6 @@
+<% if (flash) { %>
+<div class="aviso aviso--<%= flash.tipo %>" role="status" data-aviso>
+  <span><%= flash.mensaje %></span>
+  <button type="button" class="aviso__cerrar" aria-label="Cerrar" data-aviso-cerrar>×</button>
+</div>
+<% } %>

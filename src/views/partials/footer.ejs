@@ -1,0 +1,32 @@
+<footer class="pie" id="contacto">
+  <div class="pie__interior">
+    <div class="pie__grande">
+      <p class="etiqueta etiqueta--clara">Contacto</p>
+      <h2>¿Dudas? <em>Escribinos</em> y arrancamos.</h2>
+      <a class="pildora pildora--naranja pildora--grande" href="<%= gym.whatsappUrl %>" target="_blank" rel="noopener">Hablar por WhatsApp</a>
+    </div>
+
+    <div class="pie__datos">
+      <div>
+        <h3>Dónde estamos</h3>
+        <p><%= gym.direccion %><br><%= gym.ciudad %></p>
+        <% if (gym.mapaUrl) { %><a href="<%= gym.mapaUrl %>" target="_blank" rel="noopener">Ver en el mapa →</a><% } %>
+      </div>
+      <div>
+        <h3>Atención</h3>
+        <p><%= gym.horarioAtencion %></p>
+      </div>
+      <div>
+        <h3>Escribinos</h3>
+        <p><%= gym.telefono %><br><a href="mailto:<%= gym.email %>"><%= gym.email %></a></p>
+        <a href="https://instagram.com/<%= gym.instagram %>" target="_blank" rel="noopener">@<%= gym.instagram %></a>
+      </div>
+    </div>
+
+    <div class="pie__fin">
+      <span class="pie__marca"><%- include('logo') %> <%= gym.nombre %></span>
+      <span>© <%= new Date().getFullYear() %> · Todos los derechos reservados</span>
+      <a href="/admin">Acceso administración</a>
+    </div>
+  </div>
+</footer>

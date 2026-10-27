@@ -1,0 +1,185 @@
+<%- include('partials/head', { estilos: ['landing'] }) %>
+<body class="landing">
+<%- include('partials/header') %>
+
+<main>
+  <%- include("partials/hero") %>
+
+  <!-- HORARIOS -->
+  <section class="seccion" id="horarios" aria-labelledby="horarios-titulo">
+    <header class="seccion__cabeza">
+      <p class="etiqueta">Horarios</p>
+      <h2 id="horarios-titulo">La semana, <em>de un vistazo</em></h2>
+      <p>Se actualizan desde el gimnasio al instante. Elegí un día y reservá tu lugar.</p>
+    </header>
+
+    <div class="dias" role="tablist" aria-label="Días de la semana" data-dias>
+      <% for (let d = 1; d <= 7; d++) { %>
+        <button type="button" role="tab" id="tab-dia-<%= d %>" class="dias__boton<%= d === diaHoy ? ' es-activo' : '' %>"
+                aria-selected="<%= d === diaHoy %>" aria-controls="panel-dia-<%= d %>" data-dia="<%= d %>">
+          <span><%= diasNombre[d].slice(0, 3) %></span>
+          <% if (d === diaHoy) { %><small>Hoy</small><% } %>
+        </button>
+      <% } %>
+    </div>
+
+    <% for (let d = 1; d <= 7; d++) { %>
+      <div class="clases" role="tabpanel" id="panel-dia-<%= d %>" aria-labelledby="tab-dia-<%= d %>" <%= d === diaHoy ? '' : 'hidden' %>>
+        <% if (!grilla[d].length) { %>
+          <p class="vacio">No hay clases los <%= diasNombre[d].toLowerCase() %>. ¡Aprovechá para descansar!</p>
+        <% } %>
+        <% grilla[d].forEach((c) => { %>
+          <article class="clase">
+            <div class="clase__hora"><strong><%= c.inicio %></strong><span>a <%= c.fin %></span></div>
+            <div class="clase__info">
+              <h3><%= c.actividad %></h3>
+              <p><%= c.profesor ? 'Con ' + c.profesor : 'Sin profesor asignado' %> · <%= c.cupo %> lugares</p>
+            </div>
+            <a class="pildora pildora--linea pildora--chica" href="#turnos" data-reservar="<%= c.actividad %>">Reservar</a>
+          </article>
+        <% }) %>
+      </div>
+    <% } %>
+  </section>
+
+  <!-- PLANES -->
+  <section class="seccion seccion--bosque" id="planes" aria-labelledby="planes-titulo">
+    <header class="seccion__cabeza seccion__cabeza--clara">
+      <p class="etiqueta etiqueta--clara">Planes</p>
+      <h2 id="planes-titulo">Un plan para <em>cada ritmo</em></h2>
+      <p>Sin matrícula escondida. Pagás por mes y cambiás de plan cuando quieras.</p>
+    </header>
+
+    <div class="planes">
+      <% planes.forEach((p) => { %>
+        <article class="plan<%= p.destacado ? ' plan--destacado' : '' %>">
+          <% if (p.destacado) { %><span class="plan__esquina"></span><span class="plan__sello">El más elegido</span><% } %>
+          <h3><%= p.nombre %></h3>
+          <p class="plan__desc"><%= p.descripcion %></p>
+          <p class="plan__precio"><% if (Number(p.precio) > 0) { %><strong><%= formatoPrecio(p.precio) %></strong><span>/ mes</span><% } else { %><strong class="plan__consultar">A consultar</strong><% } %></p>
+          <p class="plan__clases"><%= p.clases_por_semana ? `${p.clases_por_semana} ${p.clases_por_semana === 1 ? "día" : "días"} por semana` : 'Pase libre' %></p>
+          <ul>
+            <% lineas(p.beneficios).forEach((b) => { %><li><%= b %></li><% }) %>
+          </ul>
+          <a class="pildora <%= p.destacado ? 'pildora--naranja' : 'pildora--oscura' %>" href="#inscripcion" data-plan="<%= p.id %>">Quiero este plan</a>
+        </article>
+      <% }) %>
+    </div>
+  </section>
+
+  <!-- TURNOS -->
+  <section class="seccion" id="turnos" aria-labelledby="turnos-titulo">
+    <div class="turnos">
+      <div class="turnos__form">
+        <span class="turnos__esquina" aria-hidden="true"></span>
+        <h2 id="turnos-titulo">Sacá tu <em>turno</em></h2>
+
+        <ol class="pasos" aria-label="Progreso de la reserva" data-pasos>
+          <li class="es-activo"><span>Clase</span></li>
+          <li><span>Horario</span></li>
+          <li><span>Datos</span></li>
+          <li><span>Listo</span></li>
+        </ol>
+
+        <form id="form-turno" novalidate autocomplete="on">
+          <input type="hidden" name="horario_id">
+          <input type="hidden" name="fecha">
+
+          <div class="paso" data-paso="1">
+            <p class="paso__titulo">Elegí la actividad</p>
+            <label class="campo">
+              <span>Actividad</span>
+              <select name="actividad" required>
+                <option value="">Seleccionar actividad</option>
+                <% actividades.forEach((a) => { %><option value="<%= a %>"><%= a %></option><% }) %>
+              </select>
+            </label>
+            <p class="ayuda">Si ya sos socio/a, usamos tu teléfono para vincular el turno a tu ficha.</p>
+          </div>
+
+          <div class="paso" data-paso="2" hidden>
+            <p class="paso__titulo">Elegí día y hora</p>
+            <div class="sesiones" data-sesiones aria-live="polite"></div>
+          </div>
+
+          <div class="paso" data-paso="3" hidden>
+            <p class="paso__titulo">Tus datos</p>
+            <p class="resumen-turno" data-resumen></p>
+            <label class="campo"><span>Nombre y apellido</span><input name="nombre" type="text" autocomplete="name" required minlength="3"></label>
+            <label class="campo"><span>Teléfono</span><input name="telefono" type="tel" autocomplete="tel" required placeholder="11 5555 5555"></label>
+            <label class="campo"><span>Email (opcional)</span><input name="email" type="email" autocomplete="email"></label>
+          </div>
+
+          <div class="paso paso--final" data-paso="4" hidden>
+            <div class="confirmado">
+              <span class="confirmado__tilde" aria-hidden="true">✓</span>
+              <h3>¡Turno reservado!</h3>
+              <p data-confirmacion></p>
+              <p class="confirmado__codigo">Tu código: <strong data-codigo></strong></p>
+              <button type="button" class="pildora pildora--oscura" data-otro>Reservar otro turno</button>
+            </div>
+          </div>
+
+          <p class="error-form" data-error role="alert" hidden></p>
+
+          <div class="turnos__botones" data-botones>
+            <button type="button" class="pildora pildora--linea" data-atras hidden>Atrás</button>
+            <button type="button" class="pildora pildora--oscura" data-siguiente disabled>Siguiente</button>
+          </div>
+        </form>
+      </div>
+
+      <aside class="turnos__lado" aria-hidden="true">
+        <div class="turnos__logo"><%- include('partials/logo') %></div>
+        <p class="turnos__frase">Tu lugar, <em>asegurado.</em></p>
+        <ul>
+          <li>Cupos actualizados en tiempo real</li>
+          <li>Reservá hasta <%= gym.antelacionMin %> min antes</li>
+          <li>Sin llamadas ni mensajes de ida y vuelta</li>
+        </ul>
+      </aside>
+    </div>
+  </section>
+
+  <!-- INSCRIPCIÓN -->
+  <section class="seccion seccion--crema" id="inscripcion" aria-labelledby="inscripcion-titulo">
+    <div class="inscripcion">
+      <header>
+        <p class="etiqueta">Inscripción online</p>
+        <h2 id="inscripcion-titulo">Sumate <em>hoy</em></h2>
+        <p>Dejanos tus datos y te escribimos para coordinar el pago y tu primera clase. Tarda menos de un minuto.</p>
+        <ul class="beneficios">
+          <li>Evaluación inicial sin cargo</li>
+          <li>Plan de entrenamiento a tu medida</li>
+          <li>Control de cuotas y asistencia en un solo lugar</li>
+        </ul>
+      </header>
+
+      <form class="inscripcion__form" id="form-inscripcion" novalidate>
+        <label class="campo"><span>Nombre y apellido</span><input name="nombre" type="text" autocomplete="name" required></label>
+        <div class="campos-2">
+          <label class="campo"><span>DNI</span><input name="dni" type="text" inputmode="numeric" placeholder="Opcional"></label>
+          <label class="campo"><span>Teléfono</span><input name="telefono" type="tel" autocomplete="tel" required></label>
+        </div>
+        <label class="campo"><span>Email (opcional)</span><input name="email" type="email" autocomplete="email"></label>
+        <label class="campo">
+          <span>Plan</span>
+          <select name="plan_id">
+            <option value="">Todavía no sé</option>
+            <% planes.forEach((p) => { %><option value="<%= p.id %>"><%= p.nombre %> · <%= precioMes(p.precio) %></option><% }) %>
+          </select>
+        </label>
+        <label class="campo"><span>Mensaje (opcional)</span><textarea name="mensaje" rows="3" maxlength="300"></textarea></label>
+        <p class="error-form" data-error role="alert" hidden></p>
+        <p class="exito-form" data-exito role="status" hidden>¡Recibimos tu solicitud! Te contactamos a la brevedad.</p>
+        <button class="pildora pildora--verde pildora--grande" type="submit">Quiero inscribirme</button>
+      </form>
+    </div>
+  </section>
+</main>
+
+<%- include('partials/footer') %>
+<script src="/js/landing.js"></script>
+<script src="/js/turnos.js"></script>
+</body>
+</html>

@@ -1,0 +1,49 @@
+<!-- HERO -->
+<section class="hero" aria-labelledby="hero-titulo">
+  <div class="hero__videos" aria-hidden="true">
+    <video class="hero__video es-activo" src="/videos/entrenamiento-1.mp4" autoplay muted playsinline preload="auto" data-video></video>
+    <video class="hero__video" src="/videos/entrenamiento-2.mp4" muted playsinline preload="auto" data-video></video>
+    <div class="hero__velo"></div>
+    <div class="hero__puntos"></div>
+  </div>
+
+  <div class="hero__contenido">
+    <p class="hero__marca"><%- include('logo') %> <%= gym.nombre %></p>
+
+    <h1 id="hero-titulo">
+      <span>Empezá a</span>
+      <span class="hero__verde">entrenar</span>
+      <span>hoy<i>.</i></span>
+    </h1>
+
+    <ul class="hero__lista">
+      <li><svg viewBox="0 0 48 24" aria-hidden="true"><path d="M2 8v8M7 5v14M12 12h24M41 5v14M46 8v8" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg><span>Sala de<br>musculación</span></li>
+      <li><svg viewBox="0 0 48 24" aria-hidden="true"><circle cx="24" cy="7" r="4.5" fill="currentColor"/><path d="M12 22c0-7 5-11 12-11s12 4 12 11" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg><span>Clases<br>grupales</span></li>
+      <li><svg viewBox="0 0 48 24" aria-hidden="true"><path d="M4 20c6-14 14-16 20-8s14 6 20-8" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg><span>Turnos<br>online</span></li>
+    </ul>
+
+    <div class="hero__acciones">
+      <a class="hero__boton" href="#inscripcion">Sumate ahora</a>
+      <a class="hero__enlace" href="#turnos">Sacar turno →</a>
+    </div>
+
+    <ul class="hero__contacto">
+      <li><%= gym.telefono %></li>
+      <li><%= gym.direccion %>, <%= gym.ciudad %></li>
+    </ul>
+  </div>
+
+  <aside class="hero__hoy" aria-label="Clases de hoy">
+    <p class="hero__hoy-titulo"><i class="punto"></i> Hoy en el gym</p>
+    <% const hoyClases = grilla[diaHoy].slice(0, 4); %>
+    <% if (!hoyClases.length) { %><p class="hero__hoy-vacio">Hoy descansamos. ¡Nos vemos mañana!</p><% } %>
+    <ul>
+      <% hoyClases.forEach((c) => { %>
+        <li><strong><%= c.inicio %></strong><span><%= c.actividad %></span></li>
+      <% }) %>
+    </ul>
+    <a href="#horarios">Ver toda la semana →</a>
+  </aside>
+
+  <button class="hero__sonido" type="button" aria-pressed="false" data-pausa aria-label="Pausar video">❚❚</button>
+</section>

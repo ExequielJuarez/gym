@@ -1,0 +1,42 @@
+<%- include('head', { estilos: ['admin'] }) %>
+<body class="admin">
+<div class="admin__marco">
+  <aside class="lateral" id="lateral">
+    <a class="lateral__marca" href="/admin"><%- include('logo') %><span><%= gym.nombre %></span></a>
+    <nav aria-label="Panel">
+      <% const items = [
+        ['panel', '/admin', 'Resumen', 'M3 12 12 4l9 8v8a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z'],
+        ['socios', '/admin/socios', 'Socios', 'M16 11a4 4 0 1 0-8 0 4 4 0 0 0 8 0Zm-12 9c0-3.3 3.6-6 8-6s8 2.7 8 6'],
+        ['cuotas', '/admin/cuotas', 'Cuotas', 'M3 7h18v10H3zM3 11h18M7 15h3'],
+        ['asistencia', '/admin/asistencia', 'Asistencia', 'm5 13 4 4L19 7'],
+        ['turnos', '/admin/turnos', 'Turnos', 'M5 5h14v15H5zM5 9h14M9 3v4m6-4v4'],
+        ['horarios', '/admin/horarios', 'Horarios', 'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Zm0-14v5l3 2'],
+        ['planes', '/admin/planes', 'Planes', 'M12 3l2.6 5.6 6 .7-4.5 4.1 1.2 6L12 16.4 6.7 19.4l1.2-6L3.4 9.3l6-.7z'],
+        ['inscripciones', '/admin/inscripciones', 'Inscripciones', 'M4 5h16v14H4zM4 7l8 6 8-6'],
+      ]; %>
+      <% items.forEach(([clave, url, texto, icono]) => { %>
+        <a href="<%= url %>" class="<%= seccion === clave ? 'es-activo' : '' %>">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="<%= icono %>"/></svg>
+          <%= texto %>
+        </a>
+      <% }) %>
+    </nav>
+    <div class="lateral__pie">
+      <a class="lateral__web" href="/" target="_blank" rel="noopener">Ver la web ↗</a>
+      <div class="usuario">
+        <span class="usuario__avatar" aria-hidden="true"><%= admin.nombre[0] %></span>
+        <div><strong><%= admin.nombre %></strong><small>Administrador</small></div>
+      </div>
+      <form action="/admin/salir" method="post"><button type="submit" class="lateral__salir">Cerrar sesión</button></form>
+    </div>
+  </aside>
+
+  <div class="admin__contenido">
+    <header class="admin__barra">
+      <button class="admin__menu" type="button" aria-label="Abrir menú" aria-controls="lateral" aria-expanded="false" data-lateral>☰</button>
+      <h1><%= titulo %></h1>
+      <span class="admin__fecha"><%= fechas.fechaLarga(fechas.hoy()) %></span>
+      <a class="pildora pildora--oscura" href="/admin/socios/nuevo" aria-label="Nuevo socio">+ Nuevo socio</a>
+    </header>
+    <main class="admin__pagina">
+      <%- include('flash') %>

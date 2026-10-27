@@ -1,0 +1,37 @@
+<%- include('../partials/admin-top') %>
+
+<section class="tarjeta tarjeta--tabla">
+  <% if (!inscripciones.length) { %><p class="vacio-admin">Todavía no llegaron inscripciones online.</p><% } else { %>
+  <div class="tabla-scroll">
+    <table class="tabla">
+      <thead><tr><th scope="col">Recibida</th><th scope="col">Persona</th><th scope="col">Contacto</th><th scope="col">Plan</th><th scope="col">Estado</th><th scope="col"><span class="solo-lectores">Acciones</span></th></tr></thead>
+      <tbody>
+        <% inscripciones.forEach((i) => { %>
+          <tr>
+            <td data-etiqueta="Recibida"><%= fechas.fechaCorta(fechas.aTexto(new Date(i.creado_en))) %></td>
+            <td data-etiqueta="Persona"><strong><%= i.nombre %></strong><% if (i.dni) { %><br><small>DNI <%= i.dni %></small><% } %><% if (i.mensaje) { %><br><small>“<%= i.mensaje %>”</small><% } %></td>
+            <td data-etiqueta="Contacto"><a href="https://wa.me/<%= i.telefono.replace(/\D/g, '') %>" target="_blank" rel="noopener"><%= i.telefono %></a><br><small><%= i.email || '' %></small></td>
+            <td data-etiqueta="Plan"><%= i.Plan ? i.Plan.nombre : 'A definir' %></td>
+            <td data-etiqueta="Estado"><span class="etiqueta-estado etiqueta-estado--<%= i.estado %>"><%= i.estado %></span></td>
+            <td class="tabla__acciones">
+              <% if (i.estado !== 'convertida') { %>
+                <form method="post" action="/admin/inscripciones/<%= i.id %>/convertir" class="mini-form">
+                  <button class="pildora pildora--verde pildora--chica" type="submit">Hacer socio</button>
+                </form>
+                <form method="post" action="/admin/inscripciones/<%= i.id %>/estado" class="mini-form">
+                  <% if (i.estado === 'nueva') { %><button class="pildora pildora--linea pildora--chica" name="estado" value="contactada" type="submit">Contactada</button><% } %>
+                  <% if (i.estado !== 'descartada') { %><button class="pildora pildora--linea pildora--chica" name="estado" value="descartada" type="submit">Descartar</button><% } %>
+                </form>
+              <% } else if (i.socio_id) { %>
+                <a class="pildora pildora--linea pildora--chica" href="/admin/socios/<%= i.socio_id %>">Ver socio</a>
+              <% } %>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+  <% } %>
+</section>
+
+<%- include('../partials/admin-bottom') %>
